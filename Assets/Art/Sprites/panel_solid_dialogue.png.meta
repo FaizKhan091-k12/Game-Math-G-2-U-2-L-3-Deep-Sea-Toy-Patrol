@@ -1,0 +1,24 @@
+fileFormatVersion: 2
+guid: 9e1d93a24ac0434bb489a60bb6e5a6c2
+TextureImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 13
+  textureType: 8
+  textureShape: 1
+  spriteMode: 1
+  spritePixelsToUnits: 100
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  filterMode: 1
+  maxTextureSize: 2048
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    textureCompression: 1
+  spriteSheet:
+    serializedVersion: 2
+    sprites: []
+    spriteID: e2e4e1e7545843e180586eac496d4a5e
+    internalID: 21300000
