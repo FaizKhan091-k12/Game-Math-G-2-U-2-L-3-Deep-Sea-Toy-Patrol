@@ -28,6 +28,9 @@ namespace DeepSeaPatrol
         [SerializeField] private TextMeshProUGUI chartCountText;
         [SerializeField] private RectTransform chartRow;
 
+        [Header("Question Banner")]
+        [SerializeField] private TextMeshProUGUI questionBannerText;
+
         [Header("Navigation")]
         [SerializeField] private Button nextLevelButton;
 
@@ -98,6 +101,11 @@ namespace DeepSeaPatrol
 
         private IEnumerator SetupTask1()
         {
+            if (questionBannerText != null)
+            {
+                questionBannerText.text = "Tap your laser once for each fish to draw four tally marks!";
+            }
+
             DialogueManager.Instance?.ShowDialogue(
                 "More fish have joined the octopuses and voted for the Red Car! Four fish picked the Red Car. Tap your laser once for each fish to draw four tally marks.",
                 "vo_lvl2_task1",
@@ -202,10 +210,24 @@ namespace DeepSeaPatrol
                 true
             );
 
-            yield return new WaitForSeconds(2.0f);
+            // Wait until dialogue is completely spoken before advancing gameplay
+            if (DialogueManager.Instance != null)
+            {
+                yield return StartCoroutine(DialogueManager.Instance.WaitForDialogueCompletion());
+            }
+            else
+            {
+                yield return new WaitForSeconds(3.5f);
+            }
 
             // Advance to Task 2: 5th fish arrives
             currentTask = 2;
+            if (questionBannerText != null)
+            {
+                questionBannerText.text = "Draw a line across the four marks to close the group of 5!";
+                questionBannerText.transform.DOPunchScale(Vector3.one * 0.05f, 0.3f, 4, 0.5f);
+            }
+
             if (fishQueue.Count > 4 && fishQueue[4] != null)
             {
                 fishQueue[4].gameObject.SetActive(true);
@@ -264,10 +286,24 @@ namespace DeepSeaPatrol
                 true
             );
 
-            yield return new WaitForSeconds(2.4f);
+            // Wait until dialogue is completely spoken before advancing gameplay
+            if (DialogueManager.Instance != null)
+            {
+                yield return StartCoroutine(DialogueManager.Instance.WaitForDialogueCompletion());
+            }
+            else
+            {
+                yield return new WaitForSeconds(3.5f);
+            }
 
             // Advance to Task 3: 3 more fish arrive
             currentTask = 3;
+            if (questionBannerText != null)
+            {
+                questionBannerText.text = "Draw 3 more tally marks to finish counting all 8 fish votes!";
+                questionBannerText.transform.DOPunchScale(Vector3.one * 0.05f, 0.3f, 4, 0.5f);
+            }
+
             for (int i = 5; i < 8 && i < fishQueue.Count; i++)
             {
                 if (fishQueue[i] != null)
@@ -296,7 +332,21 @@ namespace DeepSeaPatrol
                 true
             );
 
-            yield return new WaitForSeconds(1.0f);
+            if (questionBannerText != null)
+            {
+                questionBannerText.text = "Count complete! Five plus three equals eight votes for the Red Car!";
+                questionBannerText.transform.DOPunchScale(Vector3.one * 0.05f, 0.3f, 4, 0.5f);
+            }
+
+            // Wait until dialogue is completely spoken before showing chart count
+            if (DialogueManager.Instance != null)
+            {
+                yield return StartCoroutine(DialogueManager.Instance.WaitForDialogueCompletion());
+            }
+            else
+            {
+                yield return new WaitForSeconds(3.5f);
+            }
 
             // Chart fills in automatically
             if (chartCountText != null)

@@ -28,8 +28,32 @@ namespace DeepSeaPatrol
         private Tween avatarBobTween;
         private string currentDialogue = "";
         private string currentVoClipName = "";
+        private float speechEndTime = 0f;
 
         private Dictionary<string, AudioClip> voCache = new Dictionary<string, AudioClip>();
+
+        public bool IsSpeaking
+        {
+            get
+            {
+                if (voiceSource != null && voiceSource.isPlaying) return true;
+                return Time.time < speechEndTime;
+            }
+        }
+
+        public IEnumerator WaitForDialogueCompletion(float extraPadding = 0.35f)
+        {
+            // Give audio playback a frame to register
+            yield return null;
+            while (IsSpeaking)
+            {
+                yield return null;
+            }
+            if (extraPadding > 0f)
+            {
+                yield return new WaitForSeconds(extraPadding);
+            }
+        }
 
         private void Awake()
         {
@@ -106,6 +130,10 @@ namespace DeepSeaPatrol
                 dialogueContainer.DOPunchScale(new Vector3(0.04f, 0.04f, 0f), 0.3f, 5, 0.5f);
             }
 
+            // Fallback reading duration in case audio is missing
+            float fallbackReading = Mathf.Max(3.2f, text.Length * 0.065f);
+            speechEndTime = Time.time + fallbackReading;
+
             // Play voiceover audio clip
             PlayVoiceClip(voClipName);
         }
@@ -127,11 +155,6 @@ namespace DeepSeaPatrol
                 return;
             }
 
-            if (SoundManager.Instance != null && SoundManager.Instance.IsMuted)
-            {
-                return;
-            }
-
             AudioClip clip = null;
             if (voCache.ContainsKey(clipName))
             {
@@ -146,13 +169,17 @@ namespace DeepSeaPatrol
                 }
             }
 
-            if (clip != null && voiceSource != null)
+            if (clip != null)
             {
-                voiceSource.Stop();
-                voiceSource.clip = clip;
-                voiceSource.Play();
+                speechEndTime = Time.time + clip.length;
+                if (voiceSource != null && (SoundManager.Instance == null || !SoundManager.Instance.IsMuted))
+                {
+                    voiceSource.Stop();
+                    voiceSource.clip = clip;
+                    voiceSource.Play();
+                }
             }
-            else if (SoundManager.Instance != null)
+            else if (SoundManager.Instance != null && !SoundManager.Instance.IsMuted)
             {
                 SoundManager.Instance.PlayBubble();
             }

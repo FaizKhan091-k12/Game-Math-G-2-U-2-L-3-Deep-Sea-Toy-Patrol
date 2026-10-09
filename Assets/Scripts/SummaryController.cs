@@ -20,6 +20,7 @@ namespace DeepSeaPatrol
         [Header("Buttons")]
         [SerializeField] private Button playAgainButton;
         [SerializeField] private Button mainMenuButton;
+        [SerializeField] GameObject[] fishesLevel2;
 
         private void Start()
         {
@@ -28,6 +29,14 @@ namespace DeepSeaPatrol
                 playAgainButton.onClick.AddListener(() =>
                 {
                     DeepSeaGameManager.Instance.GoToLevel(1);
+                    foreach (GameObject item in fishesLevel2)
+                    {
+                        item.SetActive(false);
+                        fishesLevel2[0].SetActive(true);
+                        fishesLevel2[1].SetActive(true);
+                        fishesLevel2[2].SetActive(true);
+                        fishesLevel2[3].SetActive(true);
+                    }
                 });
             }
 
@@ -36,6 +45,14 @@ namespace DeepSeaPatrol
                 mainMenuButton.onClick.AddListener(() =>
                 {
                     DeepSeaGameManager.Instance.GoToMainMenu();
+                    foreach (GameObject item in fishesLevel2)
+                    {
+                        item.SetActive(false);
+                        fishesLevel2[0].SetActive(true);
+                        fishesLevel2[1].SetActive(true);
+                        fishesLevel2[2].SetActive(true);
+                        fishesLevel2[3].SetActive(true);
+                    }
                 });
             }
         }

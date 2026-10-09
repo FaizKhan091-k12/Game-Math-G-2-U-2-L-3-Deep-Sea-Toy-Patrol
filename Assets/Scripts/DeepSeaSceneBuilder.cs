@@ -107,6 +107,7 @@ namespace DeepSeaPatrol
             Sprite laserGlowSprite = LoadSprite("laser_glow");
             Sprite tallyMarkSprite = LoadSprite("tally_mark");
             Sprite tallySlashSprite = LoadSprite("tally_slash");
+            Sprite laserToolIcon = LoadSprite("icon_laser_tool");
             TMP_FontAsset fontAsset = Resources.Load<TMP_FontAsset>("Fonts & Materials/LiberationSans SDF");
 
             // 4. Background
@@ -552,11 +553,35 @@ namespace DeepSeaPatrol
             GameObject lvl2Screen = GetOrCreateChild(screensRoot, "Screen_Level2");
             StretchFull(lvl2Screen.GetComponent<RectTransform>());
 
+            // 1. Question Banner (Placed prominently at top)
+            GameObject qBannerLvl2Obj = GetOrCreateChild(lvl2Screen, "QuestionBanner_Lvl2");
+            RectTransform qBannerLvl2Rect = qBannerLvl2Obj.GetComponent<RectTransform>();
+            qBannerLvl2Rect.anchorMin = new Vector2(0.5f, 0.865f);
+            qBannerLvl2Rect.anchorMax = new Vector2(0.5f, 0.865f);
+            qBannerLvl2Rect.pivot = new Vector2(0.5f, 0.5f);
+            qBannerLvl2Rect.anchoredPosition = Vector2.zero;
+            qBannerLvl2Rect.sizeDelta = new Vector2(1180f, 66f);
+
+            Image qBannerLvl2Bg = EnsureStandardImage(qBannerLvl2Obj);
+            qBannerLvl2Bg.sprite = panelDiagSprite;
+            qBannerLvl2Bg.color = Color.white;
+            qBannerLvl2Bg.preserveAspect = false;
+
+            GameObject qTextLvl2Obj = GetOrCreateChild(qBannerLvl2Obj, "Text");
+            StretchFull(qTextLvl2Obj.GetComponent<RectTransform>());
+            TextMeshProUGUI qLvl2TMP = GetOrAddComponent<TextMeshProUGUI>(qTextLvl2Obj);
+            if (fontAsset != null) qLvl2TMP.font = fontAsset;
+            qLvl2TMP.fontSize = 26;
+            qLvl2TMP.fontStyle = FontStyles.Bold;
+            qLvl2TMP.color = new Color(1f, 0.90f, 0.35f, 1f); // Radiant gold
+            qLvl2TMP.alignment = TextAlignmentOptions.Center;
+            qLvl2TMP.text = "Tap your laser once for each fish to draw four tally marks!";
+
             // Stone Tablet
             GameObject stoneObj = GetOrCreateChild(lvl2Screen, "StoneTablet");
             RectTransform stoneRect = stoneObj.GetComponent<RectTransform>();
-            stoneRect.anchorMin = new Vector2(0.5f, 0.61f);
-            stoneRect.anchorMax = new Vector2(0.5f, 0.61f);
+            stoneRect.anchorMin = new Vector2(0.5f, 0.60f);
+            stoneRect.anchorMax = new Vector2(0.5f, 0.60f);
             stoneRect.pivot = new Vector2(0.5f, 0.5f);
             stoneRect.anchoredPosition = Vector2.zero;
             stoneRect.sizeDelta = new Vector2(720f, 400f);
@@ -630,21 +655,21 @@ namespace DeepSeaPatrol
             // Fish queue
             GameObject fishQueueObj = GetOrCreateChild(lvl2Screen, "FishQueueArea");
             RectTransform fishQRect = fishQueueObj.GetComponent<RectTransform>();
-            fishQRect.anchorMin = new Vector2(0.5f, 0.35f);
-            fishQRect.anchorMax = new Vector2(0.5f, 0.35f);
+            fishQRect.anchorMin = new Vector2(0.5f, 0.34f);
+            fishQRect.anchorMax = new Vector2(0.5f, 0.34f);
             fishQRect.pivot = new Vector2(0.5f, 0.5f);
             fishQRect.anchoredPosition = Vector2.zero;
-            fishQRect.sizeDelta = new Vector2(1100f, 120f);
+            fishQRect.sizeDelta = new Vector2(1300f, 240f);
 
             List<RectTransform> fishRects = new List<RectTransform>();
-            float startFishX = -460f;
-            float stepFishX = 130f;
+            float startFishX = -490f;
+            float stepFishX = 140f;
             for (int i = 0; i < 8; i++)
             {
                 GameObject fObj = GetOrCreateChild(fishQueueObj, $"VoterFish_{i}");
                 RectTransform fRect = fObj.GetComponent<RectTransform>();
                 fRect.anchoredPosition = new Vector2(startFishX + (i * stepFishX), 0f);
-                fRect.sizeDelta = new Vector2(110f, 110f);
+                fRect.sizeDelta = new Vector2(215f, 215f);
                 Image fImg = GetOrAddComponent<Image>(fObj);
                 fImg.sprite = fishSprite;
                 fImg.preserveAspect = true;
@@ -652,8 +677,8 @@ namespace DeepSeaPatrol
                 // Little car held by fish
                 GameObject fcObj = GetOrCreateChild(fObj, "HeldCar");
                 RectTransform fcRect = fcObj.GetComponent<RectTransform>();
-                fcRect.anchoredPosition = new Vector2(25f, -20f);
-                fcRect.sizeDelta = new Vector2(50f, 50f);
+                fcRect.anchoredPosition = new Vector2(46f, -38f);
+                fcRect.sizeDelta = new Vector2(95f, 95f);
                 Image fcImg = GetOrAddComponent<Image>(fcObj);
                 fcImg.sprite = redCarSprite;
                 fcImg.preserveAspect = true;
@@ -665,32 +690,51 @@ namespace DeepSeaPatrol
             // Laser Button & Cannon
             GameObject laserBtnObj = GetOrCreateChild(lvl2Screen, "LaserToolButton");
             RectTransform lBtnRect = laserBtnObj.GetComponent<RectTransform>();
-            lBtnRect.anchorMin = new Vector2(0.12f, 0.62f);
-            lBtnRect.anchorMax = new Vector2(0.12f, 0.62f);
+            lBtnRect.anchorMin = new Vector2(0.12f, 0.60f);
+            lBtnRect.anchorMax = new Vector2(0.12f, 0.60f);
             lBtnRect.pivot = new Vector2(0.5f, 0.5f);
             lBtnRect.anchoredPosition = Vector2.zero;
-                lBtnRect.sizeDelta = new Vector2(190f, 110f);
-            ProceduralImage lBtnBg = SetupProceduralImage(laserBtnObj, new Color(0.85f, 0.15f, 0.25f, 1.0f), new Vector4(20f, 20f, 20f, 20f));
+            lBtnRect.sizeDelta = new Vector2(230f, 150f);
+            ProceduralImage lBtnBg = SetupProceduralImage(laserBtnObj, new Color(0.88f, 0.16f, 0.28f, 1.0f), new Vector4(24f, 24f, 24f, 24f));
             Button laserBtn = GetOrAddComponent<Button>(laserBtnObj);
             GetOrAddComponent<JuicyButton>(laserBtnObj);
 
+            // Visual: Laser Blaster Icon
+            GameObject lIconObj = GetOrCreateChild(laserBtnObj, "LaserIcon");
+            RectTransform lIconRect = lIconObj.GetComponent<RectTransform>();
+            lIconRect.anchorMin = new Vector2(0.5f, 0.65f);
+            lIconRect.anchorMax = new Vector2(0.5f, 0.65f);
+            lIconRect.pivot = new Vector2(0.5f, 0.5f);
+            lIconRect.anchoredPosition = Vector2.zero;
+            lIconRect.sizeDelta = new Vector2(130f, 95f);
+            Image lIconImg = EnsureStandardImage(lIconObj);
+            lIconImg.sprite = laserToolIcon;
+            lIconImg.preserveAspect = true;
+            lIconImg.raycastTarget = false;
+
+            // Label Text
             GameObject lBtnText = GetOrCreateChild(laserBtnObj, "Label");
-            StretchFull(lBtnText.GetComponent<RectTransform>());
+            RectTransform lTextRect = lBtnText.GetComponent<RectTransform>();
+            lTextRect.anchorMin = new Vector2(0f, 0.04f);
+            lTextRect.anchorMax = new Vector2(1f, 0.38f);
+            lTextRect.offsetMin = Vector2.zero;
+            lTextRect.offsetMax = Vector2.zero;
             TextMeshProUGUI lTMP = GetOrAddComponent<TextMeshProUGUI>(lBtnText);
             if (fontAsset != null) lTMP.font = fontAsset;
-            lTMP.fontSize = 24;
+            lTMP.fontSize = 20;
             lTMP.fontStyle = FontStyles.Bold;
             lTMP.color = Color.white;
             lTMP.alignment = TextAlignmentOptions.Center;
             lTMP.text = "TAP LASER!\n(Draw Mark)";
+            lTMP.raycastTarget = false;
 
             // Laser beam effect
             GameObject beamObj = GetOrCreateChild(lvl2Screen, "LaserBeamEffect");
             RectTransform beamRect = beamObj.GetComponent<RectTransform>();
-            beamRect.anchorMin = new Vector2(0.18f, 0.62f);
-            beamRect.anchorMax = new Vector2(0.55f, 0.62f);
+            beamRect.anchorMin = new Vector2(0.18f, 0.60f);
+            beamRect.anchorMax = new Vector2(0.55f, 0.60f);
             beamRect.anchoredPosition = Vector2.zero;
-            beamRect.sizeDelta = new Vector2(0f, 30f);
+            beamRect.sizeDelta = new Vector2(0f, 32f);
             Image beamImg = GetOrAddComponent<Image>(beamObj);
             beamImg.sprite = laserGlowSprite;
             beamObj.SetActive(false);
@@ -698,8 +742,8 @@ namespace DeepSeaPatrol
             // Chart display below
             GameObject chartRowObj = GetOrCreateChild(lvl2Screen, "ChartDisplayRow");
             RectTransform cRowRect = chartRowObj.GetComponent<RectTransform>();
-            cRowRect.anchorMin = new Vector2(0.5f, 0.22f);
-            cRowRect.anchorMax = new Vector2(0.5f, 0.22f);
+            cRowRect.anchorMin = new Vector2(0.5f, 0.19f);
+            cRowRect.anchorMax = new Vector2(0.5f, 0.19f);
             cRowRect.pivot = new Vector2(0.5f, 0.5f);
             cRowRect.anchoredPosition = Vector2.zero;
             cRowRect.sizeDelta = new Vector2(500f, 65f);
@@ -741,6 +785,7 @@ namespace DeepSeaPatrol
             SetPrivateField(lvl2Ctrl, "laserBeamEffect", beamImg);
             SetPrivateField(lvl2Ctrl, "chartCountText", cCountTMP);
             SetPrivateField(lvl2Ctrl, "chartRow", cRowRect);
+            SetPrivateField(lvl2Ctrl, "questionBannerText", qLvl2TMP);
             SetPrivateField(lvl2Ctrl, "nextLevelButton", lvl2NextBtn);
 
             // ==========================================
@@ -749,11 +794,35 @@ namespace DeepSeaPatrol
             GameObject lvl3Screen = GetOrCreateChild(screensRoot, "Screen_Level3");
             StretchFull(lvl3Screen.GetComponent<RectTransform>());
 
+            // 1. Question Banner (Placed prominently at top)
+            GameObject qBannerLvl3Obj = GetOrCreateChild(lvl3Screen, "QuestionBanner_Lvl3");
+            RectTransform qBannerLvl3Rect = qBannerLvl3Obj.GetComponent<RectTransform>();
+            qBannerLvl3Rect.anchorMin = new Vector2(0.5f, 0.865f);
+            qBannerLvl3Rect.anchorMax = new Vector2(0.5f, 0.865f);
+            qBannerLvl3Rect.pivot = new Vector2(0.5f, 0.5f);
+            qBannerLvl3Rect.anchoredPosition = Vector2.zero;
+            qBannerLvl3Rect.sizeDelta = new Vector2(1180f, 66f);
+
+            Image qBannerLvl3Bg = EnsureStandardImage(qBannerLvl3Obj);
+            qBannerLvl3Bg.sprite = panelDiagSprite;
+            qBannerLvl3Bg.color = Color.white;
+            qBannerLvl3Bg.preserveAspect = false;
+
+            GameObject qTextLvl3Obj = GetOrCreateChild(qBannerLvl3Obj, "Text");
+            StretchFull(qTextLvl3Obj.GetComponent<RectTransform>());
+            TextMeshProUGUI qLvl3TMP = GetOrAddComponent<TextMeshProUGUI>(qTextLvl3Obj);
+            if (fontAsset != null) qLvl3TMP.font = fontAsset;
+            qLvl3TMP.fontSize = 26;
+            qLvl3TMP.fontStyle = FontStyles.Bold;
+            qLvl3TMP.color = new Color(1f, 0.90f, 0.35f, 1f); // Radiant gold
+            qLvl3TMP.alignment = TextAlignmentOptions.Center;
+            qLvl3TMP.text = "Turn the wheel to point at the toy with the BIGGEST total votes!";
+
             // Frequency Table Slate
             GameObject tableSlateObj = GetOrCreateChild(lvl3Screen, "TableSlate");
             RectTransform tableSlateRect = tableSlateObj.GetComponent<RectTransform>();
-            tableSlateRect.anchorMin = new Vector2(0.35f, 0.52f);
-            tableSlateRect.anchorMax = new Vector2(0.35f, 0.52f);
+            tableSlateRect.anchorMin = new Vector2(0.35f, 0.51f);
+            tableSlateRect.anchorMax = new Vector2(0.35f, 0.51f);
             tableSlateRect.pivot = new Vector2(0.5f, 0.5f);
             tableSlateRect.anchoredPosition = Vector2.zero;
             tableSlateRect.sizeDelta = new Vector2(620f, 400f);
@@ -848,8 +917,8 @@ namespace DeepSeaPatrol
             // Ship Steering Wheel Area
             GameObject wheelArea = GetOrCreateChild(lvl3Screen, "WheelArea");
             RectTransform wAreaRect = wheelArea.GetComponent<RectTransform>();
-            wAreaRect.anchorMin = new Vector2(0.74f, 0.52f);
-            wAreaRect.anchorMax = new Vector2(0.74f, 0.52f);
+            wAreaRect.anchorMin = new Vector2(0.74f, 0.51f);
+            wAreaRect.anchorMax = new Vector2(0.74f, 0.51f);
             wAreaRect.pivot = new Vector2(0.5f, 0.5f);
             wAreaRect.anchoredPosition = Vector2.zero;
             wAreaRect.sizeDelta = new Vector2(360f, 360f);
@@ -876,8 +945,8 @@ namespace DeepSeaPatrol
             // Rotate controls & Confirm Button
             GameObject wheelCtrlRow = GetOrCreateChild(lvl3Screen, "WheelControlRow");
             RectTransform wcRowRect = wheelCtrlRow.GetComponent<RectTransform>();
-            wcRowRect.anchorMin = new Vector2(0.74f, 0.25f);
-            wcRowRect.anchorMax = new Vector2(0.74f, 0.25f);
+            wcRowRect.anchorMin = new Vector2(0.74f, 0.23f);
+            wcRowRect.anchorMax = new Vector2(0.74f, 0.23f);
             wcRowRect.pivot = new Vector2(0.5f, 0.5f);
             wcRowRect.anchoredPosition = Vector2.zero;
             wcRowRect.sizeDelta = new Vector2(340f, 65f);
@@ -897,6 +966,7 @@ namespace DeepSeaPatrol
             SetPrivateField(lvl3Ctrl, "tableRows", rowsList);
             SetPrivateField(lvl3Ctrl, "rowSelectButtons", rowButtons);
             SetPrivateField(lvl3Ctrl, "rowHighlightOverlays", rowHighlights);
+            SetPrivateField(lvl3Ctrl, "questionBannerText", qLvl3TMP);
             SetPrivateField(lvl3Ctrl, "continueToSummaryButton", lvl3NextBtn);
 
             // ==========================================

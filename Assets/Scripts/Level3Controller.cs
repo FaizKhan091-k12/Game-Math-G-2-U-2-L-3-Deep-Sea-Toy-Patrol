@@ -23,6 +23,9 @@ namespace DeepSeaPatrol
         [SerializeField] private List<Button> rowSelectButtons = new List<Button>();
         [SerializeField] private List<Image> rowHighlightOverlays = new List<Image>();
 
+        [Header("Question Banner")]
+        [SerializeField] private TextMeshProUGUI questionBannerText;
+
         [Header("Navigation")]
         [SerializeField] private Button continueToSummaryButton;
 
@@ -95,13 +98,26 @@ namespace DeepSeaPatrol
 
         private IEnumerator IntroSequence()
         {
+            if (questionBannerText != null)
+            {
+                questionBannerText.text = "Turn the wheel to point at the toy with the BIGGEST total votes!";
+            }
+
             DialogueManager.Instance?.ShowDialogue(
                 "Look! The Red Car total on this wall is 8 - the same number we just tallied together. The other two totals were counted by your ocean friends while you worked. Now let's read the whole chart!",
                 "vo_lvl3_intro",
                 true
             );
 
-            yield return new WaitForSeconds(2.8f);
+            // Wait until the intro is completely spoken before giving task 1 instruction
+            if (DialogueManager.Instance != null)
+            {
+                yield return StartCoroutine(DialogueManager.Instance.WaitForDialogueCompletion());
+            }
+            else
+            {
+                yield return new WaitForSeconds(3.5f);
+            }
 
             DialogueManager.Instance?.ShowDialogue(
                 "Look at the numbers on the wall. Turn the wheel to point at the toy with the biggest total.",
@@ -217,10 +233,24 @@ namespace DeepSeaPatrol
                 true
             );
 
-            yield return new WaitForSeconds(2.6f);
+            // Wait until speech is complete before advancing to task 2
+            if (DialogueManager.Instance != null)
+            {
+                yield return StartCoroutine(DialogueManager.Instance.WaitForDialogueCompletion());
+            }
+            else
+            {
+                yield return new WaitForSeconds(3.0f);
+            }
 
             currentTask = 2;
             isTransitioning = false;
+
+            if (questionBannerText != null)
+            {
+                questionBannerText.text = "Turn the wheel to point at the toy with the SMALLEST total votes!";
+                questionBannerText.transform.DOPunchScale(Vector3.one * 0.05f, 0.3f, 4, 0.5f);
+            }
 
             DialogueManager.Instance?.ShowDialogue(
                 "Now look at the chart again. Turn the wheel to point at the toy with the smallest total.",
@@ -257,7 +287,21 @@ namespace DeepSeaPatrol
                 true
             );
 
-            yield return new WaitForSeconds(1.2f);
+            if (questionBannerText != null)
+            {
+                questionBannerText.text = "Chart reading complete! You found the biggest and smallest totals!";
+                questionBannerText.transform.DOPunchScale(Vector3.one * 0.05f, 0.3f, 4, 0.5f);
+            }
+
+            // Wait until speech is complete before showing summary button
+            if (DialogueManager.Instance != null)
+            {
+                yield return StartCoroutine(DialogueManager.Instance.WaitForDialogueCompletion());
+            }
+            else
+            {
+                yield return new WaitForSeconds(3.0f);
+            }
 
             if (continueToSummaryButton != null)
             {
