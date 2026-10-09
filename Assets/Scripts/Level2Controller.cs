@@ -126,9 +126,19 @@ namespace DeepSeaPatrol
             yield return null;
         }
 
+        private void Update()
+        {
+            bool canTap = !isProcessingTap && (DialogueManager.Instance == null || !DialogueManager.Instance.IsSpeaking);
+            if (laserButton != null && laserButton.interactable != canTap)
+            {
+                laserButton.interactable = canTap;
+            }
+        }
+
         public void OnLaserTapped()
         {
             if (isProcessingTap) return;
+            if (DialogueManager.Instance != null && DialogueManager.Instance.IsSpeaking) return;
 
             if (currentTask == 1)
             {

@@ -62,6 +62,8 @@ namespace DeepSeaPatrol
                 {
                     rowSelectButtons[i].onClick.AddListener(() =>
                     {
+                        if (isTransitioning) return;
+                        if (DialogueManager.Instance != null && DialogueManager.Instance.IsSpeaking) return;
                         SelectRow((ToyRow)index);
                         ConfirmSelection();
                     });
@@ -190,9 +192,19 @@ namespace DeepSeaPatrol
             }
         }
 
+        private void Update()
+        {
+            bool canInteract = !isTransitioning && (DialogueManager.Instance == null || !DialogueManager.Instance.IsSpeaking);
+            if (lockRowButton != null && lockRowButton.interactable != canInteract)
+            {
+                lockRowButton.interactable = canInteract;
+            }
+        }
+
         public void ConfirmSelection()
         {
             if (isTransitioning) return;
+            if (DialogueManager.Instance != null && DialogueManager.Instance.IsSpeaking) return;
 
             if (currentTask == 1)
             {
@@ -270,7 +282,15 @@ namespace DeepSeaPatrol
                 false
             );
 
-            yield return new WaitForSeconds(1.8f);
+            if (DialogueManager.Instance != null)
+            {
+                yield return StartCoroutine(DialogueManager.Instance.WaitForDialogueCompletion());
+            }
+            else
+            {
+                yield return new WaitForSeconds(3.0f);
+            }
+
             isTransitioning = false;
         }
 
@@ -329,7 +349,15 @@ namespace DeepSeaPatrol
                 false
             );
 
-            yield return new WaitForSeconds(1.8f);
+            if (DialogueManager.Instance != null)
+            {
+                yield return StartCoroutine(DialogueManager.Instance.WaitForDialogueCompletion());
+            }
+            else
+            {
+                yield return new WaitForSeconds(3.0f);
+            }
+
             isTransitioning = false;
         }
     }
